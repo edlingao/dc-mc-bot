@@ -51,7 +51,10 @@ client.on('messageCreate', (message) => {
 function commands({command, ipServerString, message}) {
   switch(command){
     case 'ip':
-        message.channel.send(`### ${ipServerString}`);
+      message.channel.send(`### ${ipServerString}`);
+    break;
+    case 'version':
+      message.channel.send(process.env.VERSION);
     break;
   }
 }
