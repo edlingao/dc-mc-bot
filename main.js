@@ -1,6 +1,7 @@
-import {Client, GatewayIntentBits} from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
+import { add, reloadWhitelist } from './model/MCWhiteList.js';
 
 const client = new Client({
   intents: [
@@ -43,18 +44,41 @@ client.on('messageCreate', (message) => {
     .catch( () => commands({
       message,
       command,
-      ipServerString: 'El servidor MC no esta abierto, contacte al admin'
+      ipServerString: 'El servidor MC no esta abierto, contacte al admin',
+      args,
     }))
 });
 
 
-function commands({command, ipServerString, message}) {
+async function commands({command, ipServerString, message, args}) {
   switch(command){
     case 'ip':
       message.channel.send(`### ${ipServerString}`);
     break;
     case 'version':
       message.channel.send(process.env.VERSION);
+    break;
+    case 'help':
+      message.channel.send(`
+        ### Comandos disponibles:
+        - !ip
+        - !version
+        - !help
+        - !add <username>
+        - !reload
+      `);
+    break;
+    case 'add':
+      const username = args[0];
+      if(!username){
+        message.channel.send('### Debes ingresar un nombre de usuario');
+        return;
+      }
+      const text = await add(username)
+      message.channel.send(text);
+    break;
+    case 'reload':
+      message.channel.send(await reloadWhitelist());
     break;
   }
 }
