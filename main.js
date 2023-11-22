@@ -30,8 +30,10 @@ client.on('messageCreate', (message) => {
   const args = words.filter( (word, index) => index >= 1 );
   const user = message.author;
 
-  fetch("http://0.0.0.0:4040/api/tunnels")
-    .then( response => response.json())
+  fetch("http://127.0.0.1:4040/api/tunnels")
+    .then( response => {
+      return response.json();
+    })
     .then(({tunnels}) => {
       const [ tunnel ] = tunnels;
       const ipServerString = tunnel ? tunnel.public_url.split('tcp://')[1] : 'El servidor MC no esta abierto, contacte al admin';
@@ -39,14 +41,17 @@ client.on('messageCreate', (message) => {
         command,
         ipServerString,
         message,
+        args,
       });
     })
-    .catch( () => commands({
-      message,
-      command,
-      ipServerString: 'El servidor MC no esta abierto, contacte al admin',
-      args,
-    }))
+    .catch( (e) => {
+      commands({
+        message,
+        command,
+        ipServerString: 'El servidor MC no esta abierto, contacte al admin',
+        args,
+      })
+    })
 });
 
 
